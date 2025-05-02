@@ -54,14 +54,11 @@ Grove Studio 是一个基于 Tauri + Vue 3 开发的跨平台桌面应用程序�
 # 安装依赖
 npm install
 
-# 启动开发服务器
-npm dev
-
 # 启动 Tauri 开发环境
-npm tauri dev
+npm run tauri dev
 
 # 构建生产版本
-npm tauri build
+npm run tauri build
 ```
 
 ## 💻 开发规范

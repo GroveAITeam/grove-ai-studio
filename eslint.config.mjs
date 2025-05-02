@@ -13,7 +13,6 @@ export default antfu({
   ignores: [
     '*.sh',
     'node_modules',
-    'wailsjs',
     '*.md',
     '*.woff',
     '*.ttf',

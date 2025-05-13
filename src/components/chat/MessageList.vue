@@ -126,11 +126,6 @@ defineExpose({
       <div class="loading loading-spinner loading-sm" />
     </div>
 
-    <!-- 所有历史消息已加载提示 -->
-    <div v-if="noMoreMessages && !isLoadingMore && messages.length > 0" class="py-1 text-xs text-center opacity-50">
-      已加载全部历史消息
-    </div>
-
     <div class="py-4 space-y-6">
       <MessageCard
         v-for="(message, index) in messages"

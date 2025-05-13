@@ -24,10 +24,10 @@ const handelPath = (item: Nav.Item) => {
       <SidebarMenuItem
         v-for="item in items"
         :key="item.title"
-        class="flex justify-center items-center mt-3"
+        class="flex justify-center items-center"
       >
         <SidebarMenuButton class="cursor-pointer" :tooltip="item.title" @click="handelPath(item)">
-          <component :is="item.icon" v-if="item.icon" style="width: 24px;height: 24px;" />
+          <component :is="item.icon" v-if="item.icon" style="width: 16px;height: 16px;" />
           <span>{{ item.title }}</span>
         </SidebarMenuButton>
       </SidebarMenuItem>

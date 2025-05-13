@@ -3,7 +3,6 @@ import type {
   SidebarProps,
 } from '@/components/ui/sidebar'
 import Logo from '@/assets/images/appicon.png'
-import ConversationList from '@/components/chat/ConversationList.vue'
 import NavMain from '@/components/common/NavMain.vue'
 import {
   Sidebar,
@@ -11,7 +10,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenuButton,
-  SidebarRail,
 } from '@/components/ui/sidebar'
 import { navigator } from '@/router/navigator'
 
@@ -49,11 +47,6 @@ const footer = {
   url: '/setting',
   icon: Settings2,
 }
-const header = {
-  title: 'Grove Studio',
-  url: '/',
-  icon: MessageCircle,
-}
 
 const handelPath = (path: string) => {
   navigator.navigate(path)
@@ -61,24 +54,18 @@ const handelPath = (path: string) => {
 </script>
 
 <template>
-  <Sidebar v-bind="props">
-    <SidebarHeader class="justify-center items-center mt-8">
-      <SidebarMenuButton class="cursor-pointer" :tooltip="header.title" @click="handelPath(header.url)">
-        <img style="width: 24px;height: 24px;" :src="Logo">
-        <span>{{ header.title }}</span>
-      </SidebarMenuButton>
+  <Sidebar v-bind="props" :default-open="false">
+    <SidebarHeader class="justify-center items-center mt-4">
+      <img style="width: 24px;height: 24px;" :src="Logo">
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="content" />
-      <!-- 会话列表 -->
-      <ConversationList />
     </SidebarContent>
     <SidebarFooter class="justify-center items-center">
       <SidebarMenuButton class="cursor-pointer" :tooltip="footer.title" @click="handelPath(footer.url)">
-        <component :is="footer.icon" v-if="footer.icon" style="width: 24px;height: 24px;" />
+        <component :is="footer.icon" v-if="footer.icon" style="width: 16px;height: 16px;" />
         <span>{{ footer.title }}</span>
       </SidebarMenuButton>
     </SidebarFooter>
-    <SidebarRail />
   </Sidebar>
 </template>

@@ -1,16 +1,12 @@
-// import {
-//   DestroyConversation,
-//   GetConversationList,
-//   GetMessageList,
-// } from '@wailsjs/go/main/App'
 import { defineStore } from 'pinia'
 import { toast } from 'vue-sonner'
 
 export const useConversationStore = defineStore('conversation', {
-  state: () => ({
-    conversations: [] as Conversation.Item[],
-    messageList: [] as Conversation.Message[],
-    isChatMode: false,
+  state: (): Conversation.State => ({
+    conversations: [],
+    messageList: [],
+    activeSessionId: 0,
+    currentSession: null,
     isLoading: false,
     currentPage: 1,
     pageSize: 10,
@@ -18,19 +14,43 @@ export const useConversationStore = defineStore('conversation', {
   }),
   getters: {
     activeConversation: (state) => {
-      const active = state.conversations.find(c => c.active)
+      const active = state.currentSession
       return active || { id: 0, title: '新对话' }
     },
   },
   actions: {
+    // 获取所有会话
     async loadConversations() {
       try {
-        this.isLoading = true
+        // TODO api
+        // const res = await chatApi.getSessions()
+        const res = {
+          data: [{
+            id: 4,
+            title: '🙋‍♂️ 你好问候交流',
+            uid: 'default-user',
+            model: 'deepseek-r1',
+            system_prompt: 'You are a helpful assistant.',
+            temperature: 0.6,
+            top_p: 1,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            created_at: '2025-05-13T08:56:12.733Z',
+            updated_at: '2025-05-13T09:18:24.215Z',
+            deleted_at: null,
+            createdAt: '2025-05-13T08:56:12.733Z',
+            updatedAt: '2025-05-13T09:18:24.215Z',
+            deletedAt: null,
+          }],
+        }
+        this.conversations = res.data
+        if (this.conversations.length > 0 && !this.currentSession) {
+          this.setActiveSession(this.conversations[0])
+        }
+        return res.data
       } catch (error) {
-        toast.error('加载会话列表失败')
-        console.error('加载会话列表失败:', error)
-      } finally {
-        this.isLoading = false
+        console.error('Failed to fetch sessions:', error)
+        throw error
       }
     },
     async loadMessages(conversationId: number, minId: number = 0, append: boolean = false) {
@@ -42,36 +62,33 @@ export const useConversationStore = defineStore('conversation', {
       }
     },
     createNewChat() {
-      this.conversations.forEach(conv => conv.active = false)
-      this.isChatMode = false
+      // this.conversations.forEach(conv => conv.active = false)
       this.messageList = []
     },
     // 切换会话
     async switchConversation(conversation: Conversation.Item) {
-      this.conversations.forEach(conv => conv.active = conv.id === conversation.id)
+      // this.conversations.forEach(conv => conv.active = conv.id === conversation.id)
       this.messageList = []
       await this.loadMessages(conversation.id)
-      this.isChatMode = true
     },
-    async deleteConversation(index: number) {
-      const conversation = this.conversations[index]
-      const wasActive = conversation.active
 
+    // 添加删除会话方法
+    async removeSession(sessionId: number) {
       try {
-        this.conversations.splice(index, 1)
-
-        if (wasActive && this.conversations.length > 0) {
-          this.conversations[0].active = true
-          await this.loadMessages(this.conversations[0].id)
-        } else if (this.conversations.length === 0) {
-          this.messageList = []
-          this.isChatMode = false
+        // TODO 删除会话api
+        // const res = await chatApi.removeSession(sessionId)
+        const res = true
+        if (res) {
+          this.conversations = this.conversations.filter(s => s.id !== sessionId)
+          // 如果删除的是当前活动会话，切换到第一个会话
+          if (this.activeSessionId === sessionId && this.conversations.length > 0) {
+            this.setActiveSession(this.conversations[0])
+          }
         }
-
-        toast.success('删除会话成功')
+        return res
       } catch (error) {
-        toast.error('删除会话失败')
-        console.error('删除会话失败:', error)
+        console.error('Failed to delete session:', error)
+        throw error
       }
     },
     addMessage(message: Conversation.Message | Conversation.Message[]) {
@@ -90,8 +107,22 @@ export const useConversationStore = defineStore('conversation', {
         this.messageList[actualIndex].typing = typing
       }
     },
-    updateChatMode(mode: boolean) {
-      this.isChatMode = mode
+    // 修改 setActiveSession 方法
+    setActiveSession(session: Conversation.Item) {
+      // 检查 session 是否为 null 或 undefined
+      if (!session || typeof session.id === 'undefined') {
+        console.error('尝试设置无效的会话对象')
+        return
+      }
+
+      // 确保会话存在于列表中
+      const existingSession = this.conversations.find(s => s.id === session.id)
+      if (!existingSession) {
+        this.conversations = this.conversations.filter(s => s.id !== session.id)
+        this.conversations.unshift(session)
+      }
+      this.activeSessionId = session.id
+      this.currentSession = session
     },
   },
 })

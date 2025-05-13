@@ -1,4 +1,12 @@
 <script setup lang="ts">
+// import { buildCodeBlock, deepCloneAndUpdate } from '@/module/code-block.js'
+import markdownIt from '@/module/markdown-it.ts'
+import { watch } from 'vue'
+
+const props = defineProps<{
+  message: Message
+}>()
+
 interface Message {
   id?: number
   content: string
@@ -8,22 +16,18 @@ interface Message {
   updated_at?: string
 }
 
-defineProps<{
-  message: Message
-}>()
-
-// 格式化日期时间
-const formatDateTime = (dateString?: string) => {
-  if (!dateString) {
-    return new Date().toLocaleTimeString()
-  }
-  return new Date(dateString).toLocaleTimeString()
-}
+watch(
+  () => props.message,
+  (newValue) => {
+    console.log('🚀 ~ newValue:', newValue)
+  },
+  { immediate: true, deep: true },
+)
 </script>
 
 <template>
   <div
-    class="flex items-start gap-4"
+    class="flex items-start gap-4 w-full overflow-hidden"
     :class="message.role === 'user' ? 'justify-end' : ''"
   >
     <!-- 消息内容 -->
@@ -35,16 +39,10 @@ const formatDateTime = (dateString?: string) => {
       }"
     >
       <div
-        class="prose-sm prose break-words whitespace-pre-wrap"
+        class="prose-sm prose break-words"
         :class="{ typing: message.typing }"
-        v-html="message.content"
+        v-html="markdownIt.render(message.content)"
       />
-      <div
-        v-if="message.role === 'assistant'"
-        class="mt-1 text-xs text-left opacity-70"
-      >
-        {{ formatDateTime(message.created_at) }}
-      </div>
     </div>
   </div>
 </template>

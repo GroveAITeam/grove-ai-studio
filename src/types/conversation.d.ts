@@ -13,31 +13,23 @@ declare namespace Conversation {
   // 会话项接口定义
   interface Item {
     id: number
+    uid: string
     title: string
-    created_at?: string
-    updated_at?: string
-    active: boolean
-    group: string
+    model: string
+    updated_at: string
+    created_at: string
   }
 
-  // 会话Store返回值类型定义
-  interface StoreReturn {
-    conversations: Ref<Item[]>
-    messageList: Ref<Message[]>
-    isChatMode: Ref<boolean>
-    isLoading: Ref<boolean>
-    currentPage: Ref<number>
-    pageSize: Ref<number>
-    searchQuery: Ref<string>
-    activeConversation: ComputedRef<Item>
-    loadConversations: () => Promise<void>
-    loadMessages: (conversationId: number, minId?: number, append?: boolean) => Promise<void>
-    createNewChat: () => void
-    switchConversation: (conversation: Item) => Promise<void>
-    deleteConversation: (index: number) => Promise<void>
-    addMessage: (message: Message | Message[]) => void
-    updateLastAssistantMessage: (content: string, typing?: boolean) => void
-    updateChatMode: (mode: boolean) => void
+  // 会话Store State类型定义
+  interface State {
+    conversations: Item[]
+    messageList: Message[]
+    activeSessionId: number
+    currentSession: null | Item
+    isLoading: boolean
+    currentPage: number
+    pageSize: number
+    searchQuery: string
   }
 
   // API响应类型定义

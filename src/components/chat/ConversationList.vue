@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { SidebarProps } from '@/components/ui/sidebar'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +25,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarProvider,
 } from '@/components/ui/sidebar'
 import { useConversationStore } from '@/store/conversation'
 import dayjs from 'dayjs'
@@ -34,9 +34,9 @@ import { computed, onMounted, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import 'dayjs/locale/zh-cn'
 
-withDefaults(defineProps<SidebarProps>(), {
-  collapsible: 'icon',
-})
+defineProps<{
+  sidebarLeftOpen: boolean
+}>()
 
 const conversationStore = useConversationStore()
 // 设置语言为中文
@@ -165,72 +165,78 @@ const groupedSessions = computed(() => {
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
-  <Sidebar class="hidden flex-1 md:flex absolute">
-    <SidebarHeader class="gap-3.5 border-b p-4 h-[64px]">
-      <div class="flex w-full items-center justify-center">
-        <Label class="flex items-center gap-2 text-sm">
-          <Button size="sm" @click="createNewChat">
-            <Plus class="w-4 h-4" /><span class="text-sm font-normal">新对话</span>
-          </Button>
-        </Label>
-      </div>
-    </SidebarHeader>
-    <SidebarContent>
-      <ScrollArea class="w-full h-[calc(100dvh-64px)]">
-        <SidebarGroup class="px-0">
-          <template v-for="(list, groupName) in groupedSessions" :key="groupName">
-            <SidebarGroupLabel class="pl-4 mt-2 text-xs text-gray-400">
-              {{
-                groupName
-              }}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <template v-for="item in list" :key="item.id">
-                <a
-                  href="#"
-                  class="group/item flex justify-between items-center px-4 py-1 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  :class="
-                    item.id === activeSessionId
-                      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                      : ''
-                  "
-                  @click="handleSessionChange(item)"
-                >
-                  <div class="flex-1 max-w-[80%] space-y-2">
-                    <div
-                      class="truncate text-gray-950 dark:text-white"
-                      :class="item.id === activeSessionId ? 'font-bold' : 'font-normal'"
-                    >
-                      {{ item.title }}
+  <SidebarProvider
+    :open="sidebarLeftOpen"
+    class="w-auto"
+    :style="{ '--sidebar-width': '200px' }"
+  >
+    <Sidebar class="hidden flex-1 md:flex absolute">
+      <SidebarHeader class="gap-3.5 border-b p-4 h-[64px]">
+        <div class="flex w-full items-center justify-center">
+          <Label class="flex items-center gap-2 text-sm">
+            <Button size="sm" @click="createNewChat">
+              <Plus class="w-4 h-4" /><span class="text-xs font-normal">新对话</span>
+            </Button>
+          </Label>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <ScrollArea class="w-full h-[calc(100dvh-64px)]">
+          <SidebarGroup class="px-0">
+            <template v-for="(list, groupName) in groupedSessions" :key="groupName">
+              <SidebarGroupLabel class="pl-4 mt-2 text-xs text-gray-400">
+                {{
+                  groupName
+                }}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <template v-for="item in list" :key="item.id">
+                  <a
+                    href="#"
+                    class="group/item flex justify-between items-center px-4 py-1 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    :class="
+                      item.id === activeSessionId
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                        : ''
+                    "
+                    @click="handleSessionChange(item)"
+                  >
+                    <div class="flex-1 max-w-[80%] space-y-2">
+                      <div
+                        class="truncate text-gray-950 dark:text-white"
+                        :class="item.id === activeSessionId ? 'font-bold' : 'font-normal'"
+                      >
+                        {{ item.title }}
+                      </div>
                     </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button
-                        class="invisible group-hover/item:visible"
-                        size="icon"
-                        variant="ghost"
-                        @click.stop=""
-                      >
-                        <EllipsisVertical />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" side="right">
-                      <DropdownMenuItem
-                        class="text-red-600 hover:text-red-500 cursor-pointer"
-                        @click.stop="handleRemoveSession(item)"
-                      >
-                        <Trash2 class="hover:text-red-500" /> 删除
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </a>
-              </template>
-            </SidebarGroupContent>
-          </template>
-        </SidebarGroup>
-        <ScrollBar />
-      </ScrollArea>
-    </SidebarContent>
-  </Sidebar>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger as-child>
+                        <Button
+                          class="invisible group-hover/item:visible"
+                          size="icon"
+                          variant="ghost"
+                          @click.stop=""
+                        >
+                          <EllipsisVertical />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" side="right">
+                        <DropdownMenuItem
+                          class="text-red-600 hover:text-red-500 cursor-pointer"
+                          @click.stop="handleRemoveSession(item)"
+                        >
+                          <Trash2 class="hover:text-red-500" /> 删除
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </a>
+                </template>
+              </SidebarGroupContent>
+            </template>
+          </SidebarGroup>
+          <ScrollBar />
+        </ScrollArea>
+      </SidebarContent>
+    </Sidebar>
+  </SidebarProvider>
 </template>

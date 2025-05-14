@@ -4,7 +4,6 @@ import ChatInput from '@/components/chat/ChatInput.vue'
 import ConversationList from '@/components/chat/ConversationList.vue'
 import MessageList from '@/components/chat/MessageList.vue'
 import SettingsPanel from '@/components/chat/SettingsPanel.vue'
-import { SidebarProvider } from '@/components/ui/sidebar'
 import { useConversationStore } from '@/store/conversation'
 import { storeToRefs } from 'pinia'
 import { nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
@@ -35,7 +34,7 @@ const chatMessagesComponent = ref<any>(null)
 const sidebarLeftOpen = ref(true)
 
 // Settings
-const settings = reactive({
+const settings = reactive<Setting.Item>({
   model: '',
   temperature: 0.7,
   maxTokens: 2000,
@@ -92,8 +91,8 @@ const toggleSettings = () => {
   showSettings.value = !showSettings.value
 }
 
-const updateSettings = (newSettings: typeof settings) => {
-  Object.assign(settings, newSettings)
+const updateSettings = ({ type, value }: { type: keyof Setting.Item, value: string | number }) => {
+  settings[type] = value
   saveSettings()
 }
 
@@ -301,21 +300,20 @@ onUnmounted(() => {
 
 <template>
   <div class="relative flex overflow-hidden">
-    <SidebarProvider
-      v-model:open="sidebarLeftOpen"
-      class="w-auto"
-      :style="{ '--sidebar-width': '200px' }"
-    >
-      <!-- 会话列表 -->
-      <ConversationList />
-    </SidebarProvider>
+    <!-- 会话列表 -->
+    <ConversationList
+      :sidebar-left-open="sidebarLeftOpen"
+      @toggle-conversation="handleShowConversation"
+    />
     <div class="flex relative flex-col justify-center items-center pb-4 w-full h-[calc(100dvh)] max-h-[calc(100dvh)]">
       <!-- 聊天头部 -->
       <ChatHeader
         :title="activeConversation.title"
         :sidebar-left-open="sidebarLeftOpen"
+        :settings="settings"
         @toggle-settings="toggleSettings"
         @toggle-conversation="handleShowConversation"
+        @update:settings="updateSettings"
       />
       <div class="grid overflow-y-auto relative w-full grid-rows-0 grow shrink">
         <!-- 消息列表区域 -->
@@ -338,9 +336,8 @@ onUnmounted(() => {
 
     <!-- 设置面板 -->
     <SettingsPanel
-      v-if="showSettings"
+      :sidebar-open="showSettings"
       :settings="settings"
-      class="settings-panel"
       @close="toggleSettings"
       @update:settings="updateSettings"
     />

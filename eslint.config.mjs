@@ -42,6 +42,7 @@ export default antfu({
     'style/brace-style': ['error', '1tbs', { allowSingleLine: true }],
     'curly': ['error', 'multi-line'],
     'nonblock-statement-body-position': ['error', 'beside'],
+    'vue/attribute-hyphenation': 'off',
     // 关闭一些耗时的规则
     'import/no-cycle': 'off',
     'import/no-deprecated': 'off',

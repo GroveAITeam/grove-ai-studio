@@ -32,6 +32,7 @@ const {
 const showSettings = ref(false)
 const chatMessagesComponent = ref<any>(null)
 const sidebarLeftOpen = ref(true)
+const chatHistory = ref<Conversation.Message[]>([])
 
 // Settings
 const settings = reactive<Setting.Item>({
@@ -41,10 +42,13 @@ const settings = reactive<Setting.Item>({
   contextLength: 10,
 })
 
-// Stream handling
-// const streamChunks = ref<Map<number, string>>(new Map())
-// const pendingDone = ref<boolean>(false)
 const doneTimeout = ref<number | null>(null)
+
+watch(() => conversationStore.currentSession, (newValue, oldValue) => {
+  if (newValue?.id !== oldValue?.id) {
+    handleSessionChange()
+  }
+}, { deep: true })
 
 // 启用模型
 const loadOpenAIApiKey = async () => {
@@ -64,6 +68,20 @@ const loadOpenAIApiKey = async () => {
     console.error('加载模型设置失败:', error)
     toast.error('加载模型设置失败')
     return false
+  }
+}
+
+const handleSessionChange = async () => {
+  chatHistory.value = []
+  try {
+    // TODO api 获取对话历史
+    // const messages = await chatApi.getMessages(session.id)
+    chatHistory.value = []
+    setTimeout(() => {
+      scrollToBottom()
+    }, 0)
+  } catch (error) {
+    console.error('Error loading chat history:', error)
   }
 }
 
@@ -96,7 +114,6 @@ const updateSettings = ({ type, value }: { type: keyof Setting.Item, value: stri
   saveSettings()
 }
 
-// Utility
 const scrollToBottom = async () => {
   await nextTick()
   if (chatMessagesComponent.value?.scrollToBottom) {
@@ -321,7 +338,6 @@ onUnmounted(() => {
           <MessageList
             v-if="messageList.length"
             ref="chatMessagesComponent"
-            key="msglist"
             :messages="messageList"
             @load-more="handleLoadMore"
           />

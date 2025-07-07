@@ -26,6 +26,22 @@ export const useConversationStore = defineStore('conversation', {
         // const res = await chatApi.getSessions()
         const res = {
           data: [{
+            id: 6,
+            title: '🙋‍♂️ 你好问候交流1',
+            uid: 'default-user',
+            model: 'deepseek-r1',
+            system_prompt: 'You are a helpful assistant.',
+            temperature: 0.6,
+            top_p: 1,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            created_at: '2025-05-14T08:56:12.733Z',
+            updated_at: '2025-05-14T09:18:24.215Z',
+            deleted_at: null,
+            createdAt: '2025-05-14T08:56:12.733Z',
+            updatedAt: '2025-05-14T09:18:24.215Z',
+            deletedAt: null,
+          }, {
             id: 4,
             title: '🙋‍♂️ 你好问候交流',
             uid: 'default-user',

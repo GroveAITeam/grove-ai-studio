@@ -2,6 +2,7 @@ import router from '@/router/index'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
+import 'highlight.js/styles/atom-one-dark.css'
 import './index.css'
 
 const pinia = createPinia()

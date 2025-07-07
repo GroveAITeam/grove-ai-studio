@@ -4,10 +4,11 @@ declare namespace Conversation {
     id?: number
     conversation_id?: number
     content: string
-    role: 'user' | 'assistant'
+    role: 'system' | 'user' | 'assistant'
     typing?: boolean
     created_at?: string
     updated_at?: string
+    reasoning_content?: string
   }
 
   // 会话项接口定义

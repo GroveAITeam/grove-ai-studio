@@ -7,14 +7,15 @@
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../dist"
+    "frontendDist": "../dist",
+    "features": ["pytauri/standalone"]
   },
   "app": {
     "windows": [
       {
         "title": "grove-ai-studio",
-        "width": 800,
-        "height": 600
+        "width": 1920,
+        "height": 1440
       }
     ],
     "security": {

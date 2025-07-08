@@ -48,5 +48,6 @@ export default antfu({
     'import/no-deprecated': 'off',
     'import/no-named-as-default': 'off',
     'prefer-promise-reject-errors': 'off',
+    'perfectionist/sort-imports': ['off'],
   },
 })
